@@ -9,11 +9,21 @@ class Sketch {
 
     setupScene() {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        const frustumSize = 1;
+        this.camera = new THREE.OrthographicCamera(
+            frustumSize / -2,
+            frustumSize / 2,
+            frustumSize / 2,
+            frustumSize / -2,
+            -1000,
+            1000
+        );
+        this.camera.position.z = 1;
+
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('canvas') });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-        this.camera.position.z = 1;
     }
 
     resize() {
