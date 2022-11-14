@@ -38,6 +38,9 @@ class Sketch {
         const material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
+            uniforms: {
+                resolution: { type: 'v4', value: new THREE.Vector4(window.innerWidth, window.innerHeight, 1, 1) },
+            }
         });
         const mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
