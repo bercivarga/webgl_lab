@@ -34,12 +34,26 @@ class Sketch {
     }
 
     createShapes() {
+        const imageAspect = 1. / 1.;
+        let a1;
+        let a2;
+
+        const {clientWidth: width, clientHeight: height} = this.renderer.domElement;
+
+        if (height / width > imageAspect) {
+          a1 = (width / height) * imageAspect;
+          a2 = 1;
+        } else {
+          a1 = 1;
+          a2 = (height / width) / imageAspect;
+        }
+
         const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
             uniforms: {
-                resolution: { type: 'v4', value: new THREE.Vector4(window.innerWidth, window.innerHeight, 1, 1) },
+                resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
             }
         });
         const mesh = new THREE.Mesh(geometry, material);
