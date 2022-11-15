@@ -3,6 +3,7 @@ precision mediump float;
 uniform vec4 resolution;
 uniform float time;
 uniform sampler2D matcap;
+uniform vec2 mouse;
 
 float PI = 3.141592653589793238;
 
