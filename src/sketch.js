@@ -24,8 +24,8 @@ class Sketch {
         window.addEventListener('mousemove', (e) => {
             this.mouse.prevX = this.mouse.x;
             this.mouse.prevY = this.mouse.y;
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
+            this.mouse.x = (e.pageX / this.renderer.domElement.offsetWidth - 0.5) * 2;
+            this.mouse.y = (e.pageY / this.renderer.domElement.offsetHeight - 0.5) * -2;
             this.mouse.vX = this.mouse.x - this.mouse.prevX;
             this.mouse.vY = this.mouse.y - this.mouse.prevY;
         });
@@ -52,16 +52,38 @@ class Sketch {
     }
 
     createShapes() {
+        const imageAspect = 1; // e.g. (1. / 1.5);
+        let a1;
+        let a2;
+
+        const {clientWidth: width, clientHeight: height} = this.renderer.domElement;
+
+        if (height / width > imageAspect) {
+          a1 = (width / height) * imageAspect;
+          a2 = 1;
+        } else {
+          a1 = 1;
+          a2 = (height / width) / imageAspect;
+        }
+
         const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
+            uniforms: {
+                resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
+                time: { type: 'f', value: 0 },
+                // matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
+                mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
+            }
         });
         const mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
     }
 
     render() {
+        this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
+        this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
         this.renderer.render(this.scene, this.camera);
         // requestAnimationFrame(this.render.bind(this));
     }
