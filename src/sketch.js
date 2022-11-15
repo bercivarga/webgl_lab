@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertex.glsl';
-import fairyMatcap from '../public/fairy.png';
+import fairyMatcap from './matcaps/fairy.png';
+import rainbowRipple from "./matcaps/rainbowRipple.jpeg";
 
 class Sketch {
     scene;
@@ -25,8 +26,8 @@ class Sketch {
         window.addEventListener('mousemove', (e) => {
             this.mouse.prevX = this.mouse.x;
             this.mouse.prevY = this.mouse.y;
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
+            this.mouse.x = (e.pageX / this.renderer.domElement.offsetWidth - 0.5) * 2;
+            this.mouse.y = (e.pageY / this.renderer.domElement.offsetHeight - 0.5) * -2;
             this.mouse.vX = this.mouse.x - this.mouse.prevX;
             this.mouse.vY = this.mouse.y - this.mouse.prevY;
         });
@@ -63,7 +64,7 @@ class Sketch {
     }
 
     createShapes() {
-        const imageAspect = 1. / 1.;
+        const imageAspect = 1; // e.g. (1. / 1.5);
         let a1;
         let a2;
 
@@ -84,7 +85,8 @@ class Sketch {
             uniforms: {
                 resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
                 time: { type: 'f', value: 0 },
-                matcap: { type: 't', value: new THREE.TextureLoader().load(fairyMatcap) }
+                matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
+                mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
             }
         });
 
@@ -96,6 +98,7 @@ class Sketch {
 
     render() {
         this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
+        this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
         this.renderer.render(this.scene, this.camera);
         requestAnimationFrame(this.render.bind(this));
     }
