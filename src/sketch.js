@@ -12,6 +12,26 @@ class Sketch {
 
     clock = new THREE.Clock();
 
+    mouse = {
+        x: 0,
+        y: 0,
+        prevX: 0,
+        prevY: 0,
+        vX: 0,
+        vY: 0
+    }
+
+    setupMouseEvents() {
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.prevX = this.mouse.x;
+            this.mouse.prevY = this.mouse.y;
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+            this.mouse.vX = this.mouse.x - this.mouse.prevX;
+            this.mouse.vY = this.mouse.y - this.mouse.prevY;
+        });
+    }
+
     setupScene() {
         this.scene = new THREE.Scene();
 
@@ -36,6 +56,10 @@ class Sketch {
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.render();
+    }
+
+    setupResizeEvent() {
+        window.addEventListener('resize', this.resize.bind(this));
     }
 
     createShapes() {
@@ -77,9 +101,10 @@ class Sketch {
     }
 
     init() {
+        this.setupMouseEvents();
         this.setupScene();
-        window.addEventListener('resize', this.resize.bind(this), false);
-        this.createShapes()
+        this.setupResizeEvent();
+        this.createShapes();
         this.render();
     }
 }
