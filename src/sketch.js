@@ -1,11 +1,16 @@
 import * as THREE from 'three';
 import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertex.glsl';
+import fairyMatcap from '../public/fairy.png';
 
 class Sketch {
     scene;
     camera;
     renderer;
+
+    shaderMaterial;
+
+    clock = new THREE.Clock();
 
     setupScene() {
         this.scene = new THREE.Scene();
@@ -54,15 +59,21 @@ class Sketch {
             fragmentShader: fragment,
             uniforms: {
                 resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
+                time: { type: 'f', value: 0 },
+                matcap: { type: 't', value: new THREE.TextureLoader().load(fairyMatcap) }
             }
         });
+
+        this.shaderMaterial = material;
+
         const mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
     }
 
     render() {
+        this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
         this.renderer.render(this.scene, this.camera);
-        // requestAnimationFrame(this.render.bind(this));
+        requestAnimationFrame(this.render.bind(this));
     }
 
     init() {
