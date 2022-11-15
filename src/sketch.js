@@ -49,7 +49,6 @@ class Sketch {
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('canvas') });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-
     }
 
     resize() {
@@ -85,7 +84,7 @@ class Sketch {
             uniforms: {
                 resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
                 time: { type: 'f', value: 0 },
-                matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
+                matcap: { type: 't', value: new THREE.TextureLoader().load(fairyMatcap) },
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
             }
         });

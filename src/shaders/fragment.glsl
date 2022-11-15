@@ -53,8 +53,8 @@ float sdf( vec3 p )
 {
     vec3 p1 = rotate(p, vec3(1.0), time/2.0);
     float box = sdBox( p1, vec3(0.2) );
-    float sphere = sdSphere( p, 0.275 );
-    return smin(sphere, box, 0.02);
+    float sphere = sdSphere( p - vec3(mouse * resolution.zw, 0.0), 0.1 );
+    return smin(sphere, box, 0.4);
 }
 
 vec3 getNormal(vec3 p) {
@@ -70,7 +70,7 @@ vec3 getNormal(vec3 p) {
 void main()	{
     vec2 newUV = gl_FragCoord.xy / resolution.xy;
     vec3 camPos = vec3(0.0, 0.0, 2.0);
-    vec3 ray = normalize(vec3((newUV - vec2(0.5)) * resolution.zw, -2.0));
+    vec3 ray = normalize(vec3((newUV - vec2(0.5)) * resolution.zw, -1.0));
 
     vec3 rayPos = camPos;
     float t = 0.0;
