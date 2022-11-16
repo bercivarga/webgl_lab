@@ -7,6 +7,10 @@ uniform vec2 mouse;
 
 float PI = 3.141592653589793238;
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 vec2 getMatcap(vec3 eye, vec3 normal) {
     vec3 r = reflect(eye, normal);
     float m = 2.0 * sqrt(r.x*r.x + r.y*r.y + (r.z+1.0)*(r.z+1.0));
@@ -51,10 +55,24 @@ float sdBox( vec3 p, vec3 b )
 
 float sdf( vec3 p )
 {
-    vec3 p1 = rotate(p, vec3(1.0), time/2.0);
-    float box = sdBox( p1, vec3(0.2) );
-    float sphere = sdSphere( p - vec3(mouse * resolution.zw, 0.0), 0.1 );
-    return smin(sphere, box, 0.4);
+    vec3 p1 = rotate(p, vec3(1.0), time/5.0);
+    float box = smin(sdBox( p1, vec3(0.3) ), sdSphere( p1, 0.2 ), 0.3);
+
+    float realSphere = sdSphere( p1, 0.3 );
+    float final = mix(box, realSphere, 0.2);
+
+    for (float i = 0.0; i < 10.0; i++) {
+        float randOffset = rand(vec2(i, 0.0));
+        float prog = 1.0 - fract(time / 4.0 + randOffset);
+
+        vec3 pos = vec3(sin(randOffset * 2.0 * PI), cos(randOffset * 2.0 * PI), 0.0) * 1.5;
+
+        float goToCenter = sdSphere( p - pos*prog, 0.1 );
+        final = smin(final, goToCenter, 0.3);
+    }
+
+    float mouseSphere = sdSphere( p - vec3(mouse * resolution.zw, 0.0), 0.1 );
+    return smin(final, mouseSphere, 0.4);
 }
 
 vec3 getNormal(vec3 p) {
@@ -70,7 +88,7 @@ vec3 getNormal(vec3 p) {
 void main()	{
     vec2 newUV = gl_FragCoord.xy / resolution.xy;
     vec3 camPos = vec3(0.0, 0.0, 2.0);
-    vec3 ray = normalize(vec3((newUV - vec2(0.5)) * resolution.zw, -1.0));
+    vec3 ray = normalize(vec3((newUV - vec2(0.5)) * resolution.zw, -1.));
 
     vec3 rayPos = camPos;
     float t = 0.0;
@@ -96,6 +114,9 @@ void main()	{
 //        color *= diff;
         vec2 matcapUv = getMatcap(ray, normal);
         color = texture2D(matcap, matcapUv).rgb;
+
+        float fresnel = pow(1.0 + dot(normal, ray), 3.0);
+        color = mix(color, vec3(1.0, 1.0, 1.0), fresnel);
     }
 
     gl_FragColor = vec4(color, 1.0);

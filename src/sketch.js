@@ -77,14 +77,14 @@ class Sketch {
           a2 = (height / width) / imageAspect;
         }
 
-        const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+        const geometry = new THREE.PlaneGeometry(1, 1, 64, 64);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
             uniforms: {
                 resolution: { type: 'v4', value: new THREE.Vector4(width, height, a1, a2) },
                 time: { type: 'f', value: 0 },
-                matcap: { type: 't', value: new THREE.TextureLoader().load(fairyMatcap) },
+                matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
             }
         });
