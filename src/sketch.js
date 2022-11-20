@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertex.glsl';
+import catimage from "./textures/cat.png";
 
 class Sketch {
     scene;
@@ -51,7 +52,7 @@ class Sketch {
         window.addEventListener('resize', this.resize.bind(this));
     }
 
-    createShapes() {
+    async createShapes() {
         const imageAspect = 1; // e.g. (1. / 1.5);
         let a1;
         let a2;
@@ -66,7 +67,12 @@ class Sketch {
           a2 = (height / width) / imageAspect;
         }
 
-        const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+        const texture = await new THREE.TextureLoader().load(catimage);
+        texture.magFilter = THREE.NearestFilter;
+        // texture.wrapS = THREE.RepeatWrapping;
+        // texture.wrapT = THREE.RepeatWrapping;
+
+        const geometry = new THREE.PlaneGeometry(1, 1);
         const material = new THREE.ShaderMaterial({
             vertexShader: vertex,
             fragmentShader: fragment,
@@ -75,8 +81,13 @@ class Sketch {
                 time: { type: 'f', value: 0 },
                 // matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
+                color1: {type: "v4", value: new THREE.Vector4(1.0, 0.5, 1.0, 1.0)},
+                color2: {type: "v4", value: new THREE.Vector4(1.0, 0.0, 0.5, 1.0)},
+                uDiffuse: {type: 'sampler2D', value: texture},
+                uTint: {type: "v4", value: new THREE.Vector4(1.0, 0.0, 0.0, 1.0)},
             }
         });
+
         this.shaderMaterial = material;
         const mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
@@ -86,14 +97,14 @@ class Sketch {
         this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
         this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
         this.renderer.render(this.scene, this.camera);
-        // requestAnimationFrame(this.render.bind(this));
+        requestAnimationFrame(this.render.bind(this));
     }
 
-    init() {
+    async init() {
         this.setupMouseEvents();
         this.setupScene();
         this.setupResizeEvent();
-        this.createShapes();
+        await this.createShapes();
         this.render();
     }
 }
