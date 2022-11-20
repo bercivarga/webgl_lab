@@ -77,6 +77,7 @@ class Sketch {
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
             }
         });
+        this.shaderMaterial = material;
         const mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);
     }
