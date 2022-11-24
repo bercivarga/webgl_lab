@@ -3,29 +3,30 @@ uniform float time;
 uniform vec4 resolution;
 uniform vec2 mouse;
 
-uniform sampler2D uTexture;
+in vec3 vNormal;
 
 in vec2 vUv;
 
-// offset a texture by mouse position
-vec4 offset(sampler2D tex, vec2 uv, vec2 offset) {
-    return texture(tex, uv + offset);
-}
-
-float inverseLerp(float a, float b, float v) {
-    return (v - a) / (b - a);
-}
-
-float remap(float a, float b, float c, float d, float v) {
-    return inverseLerp(a, b, v) * (d - c) + c;
+float remap(float value, float low1, float high1, float low2, float high2) {
+    return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
 }
 
 void main() {
-    vec3 color = vec3(0.75);
+    vec3 baseColor = vec3(0.5);
+    vec3 lightning = vec3(0.0);
 
-    float t1 = sin((vUv.y * (1.0 - vUv.y) * 4.0) * 200.0 + time * 2.0) + 0.5;
+    vec3 ambient = vec3(0.1);
 
-    color = texture(uTexture, vUv - mouse).rgb * t1 / 1.5;
+    vec3 normal = normalize(vNormal);
 
-    gl_FragColor = vec4(color, 1.0);
+    lightning += ambient;
+
+    vec3 skyColor = vec3(0.6, 0.3, 0.1);
+    vec3 groundColor = vec3(0.0, 0.3, 0.6);
+    float hemilight = dot(normal, vec3(0.0, 1.0, 0.0));
+    vec3 hemiColor = mix(skyColor, groundColor, hemilight * 0.5 + 0.5);
+
+    vec3 color = baseColor + lightning ;
+
+    gl_FragColor = vec4(hemiColor, 1.0);
 }

@@ -1,7 +1,16 @@
 import * as THREE from 'three';
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader.js";
 import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertex.glsl';
 import catimage from "./textures/cat.png";
+
+import left from './resources/Cold_Sunset__Cam_2_Left+X.png';
+import right from './resources/Cold_Sunset__Cam_3_Right-X.png';
+import top from './resources/Cold_Sunset__Cam_4_Up+Y.png';
+import bottom from './resources/Cold_Sunset__Cam_5_Down-Y.png';
+import back from './resources/Cold_Sunset__Cam_1_Back-Z.png';
+import front from './resources/Cold_Sunset__Cam_0_Front+Z.png';
 
 class Sketch {
     scene;
@@ -39,6 +48,8 @@ class Sketch {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
         this.camera.position.z = 1;
+
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
     }
 
     resize() {
@@ -50,6 +61,38 @@ class Sketch {
 
     setupResizeEvent() {
         window.addEventListener('resize', this.resize.bind(this));
+    }
+
+    loadAssets() {
+        const cubeTextureLoader = new THREE.CubeTextureLoader();
+        this.scene.background = cubeTextureLoader.load([
+            left,
+            right,
+            top,
+            bottom,
+            front,
+            back,
+        ]);
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                specMap: {type: 't', value: this.scene.background},
+            },
+            vertexShader: vertex,
+            fragmentShader: fragment,
+        });
+
+        const glbLoader = new GLTFLoader();
+        glbLoader.load("suzanne.glb", (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            gltf.scene.position.set(0, 0, 0);
+            gltf.scene.traverse((child) => {
+                if (child.isMesh) {
+                    child.material = material;
+                }
+            });
+            this.scene.add(gltf.scene);
+        });
     }
 
     async createShapes() {
@@ -94,8 +137,8 @@ class Sketch {
     }
 
     render() {
-        this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
-        this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
+        // this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
+        // this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
         this.renderer.render(this.scene, this.camera);
         requestAnimationFrame(this.render.bind(this));
     }
@@ -104,7 +147,8 @@ class Sketch {
         this.setupMouseEvents();
         this.setupScene();
         this.setupResizeEvent();
-        await this.createShapes();
+        // await this.createShapes();
+        this.loadAssets();
         this.render();
     }
 }
