@@ -83,7 +83,7 @@ class Sketch {
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
                 color1: {type: "v4", value: new THREE.Vector4(1.0, 0.5, 1.0, 1.0)},
                 color2: {type: "v4", value: new THREE.Vector4(1.0, 0.0, 0.5, 1.0)},
-                uDiffuse: {type: 'sampler2D', value: texture},
+                uTexture: {type: 'sampler2D', value: texture},
                 uTint: {type: "v4", value: new THREE.Vector4(1.0, 0.0, 0.0, 1.0)},
             }
         });
