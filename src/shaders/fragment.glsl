@@ -15,9 +15,10 @@ void main()	{
 
     float distToCenter = length(vUv - 0.5);
     float d = sin(distToCenter * 100.0 + time * 0.5) * 0.5 + 0.5;
-    d = smoothstep(0.0, 0.1, d);
-    imageBackground.rgb = vec3(0.0);
-    imageBackground.rgb = mix(imageBackground.rgb, vec3(1.0, 0.0, 0.0), d);
+    vec2 dir = normalize(vUv - 0.5);
+    vec2 rippleCoords = vUv + dir * d * 0.02;
+
+    imageBackground = texture2D(image, rippleCoords);
 
     gl_FragColor = imageBackground;
 }
