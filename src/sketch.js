@@ -20,6 +20,15 @@ class Sketch {
         vY: 0
     }
 
+    pixelDensity = 100;
+
+    setupDomEvents() {
+        document.getElementById('range-input').addEventListener('change', (e) => {
+            this.pixelDensity = e.target.value;
+            this.shaderMaterial.uniforms.pixelDensity.value = this.pixelDensity;
+        });
+    }
+
     setupMouseEvents() {
         window.addEventListener('mousemove', (e) => {
             this.mouse.prevX = this.mouse.x;
@@ -85,6 +94,8 @@ class Sketch {
                 time: { type: 'f', value: 0 },
                 // matcap: { type: 't', value: new THREE.TextureLoader().load(rainbowRipple) },
                 mouse: { type: 'v2', value: new THREE.Vector2(0, 0) },
+                image: { type: 't', value: new THREE.TextureLoader().load('spacefight.jpg') },
+                pixelDensity: { type: 'f', value: this.pixelDensity }
             }
         });
         this.shaderMaterial = material;
@@ -96,11 +107,12 @@ class Sketch {
         this.shaderMaterial.uniforms.time.value = this.clock.getElapsedTime();
         this.shaderMaterial.uniforms.mouse.value = new THREE.Vector2(this.mouse.x, this.mouse.y);
         this.renderer.render(this.scene, this.camera);
-        // requestAnimationFrame(this.render.bind(this));
+        requestAnimationFrame(this.render.bind(this));
     }
 
     init() {
         this.setupMouseEvents();
+        this.setupDomEvents();
         this.setupScene();
         this.setupResizeEvent();
         this.createShapes();

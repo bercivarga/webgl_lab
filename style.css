@@ -100,3 +100,10 @@ button:focus-visible {
   width: 100vw;
   height: 100vh;
 }
+
+input[type="range"] {
+  position: absolute;
+  z-index: 10;
+  top: 48px;
+  right: 48px;
+}
