@@ -24,8 +24,8 @@ class Sketch {
         window.addEventListener('mousemove', (e) => {
             this.mouse.prevX = this.mouse.x;
             this.mouse.prevY = this.mouse.y;
-            this.mouse.x = (e.pageX / this.renderer.domElement.offsetWidth - 0.5) * 2;
-            this.mouse.y = (e.pageY / this.renderer.domElement.offsetHeight - 0.5) * -2;
+            this.mouse.x = (e.pageX / this.renderer.domElement.offsetWidth - 0.5);
+            this.mouse.y = (e.pageY / this.renderer.domElement.offsetHeight - 0.5) * -1;
             this.mouse.vX = this.mouse.x - this.mouse.prevX;
             this.mouse.vY = this.mouse.y - this.mouse.prevY;
         });
