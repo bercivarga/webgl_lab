@@ -16,8 +16,8 @@ void main()	{
 
     vec2 mouseCoords = mouse + vec2(0.5, 0.5);
 
-    float distToCenter = length(vUv - mouseCoords);
-    float d = sin(distToCenter * 20.0) * 0.5 + 0.5;
+    float distToMouse = length(vUv - mouseCoords);
+    float d = sin(distToMouse * 20.0) * 0.5 + 0.5;
     vec2 dir = normalize(vUv - mouseCoords);
     vec2 rippleCoords = vUv + dir * d * 0.02;
 
